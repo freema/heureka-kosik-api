@@ -1,8 +1,8 @@
 {
-	"name": "Freema/heurekaKosikApi",
+	"name": "freema/heureka-kosik-api",
 	"description": "Heureka kosik api",
 	"keywords": ["api", "heureka.cz"],
-	"homepage": "https://github.com/Freema/eshopAPI",
+	"homepage": "https://github.com/freema/heureka-kosik-api",
 	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"authors": [
 		{
