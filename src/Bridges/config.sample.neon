@@ -1,0 +1,6 @@
+heurekaKosikApi:
+    key: XXXXXX
+    debug: TRUE
+
+extensions:
+    heurekaKosikApi: Freema\HeurekaAPI\Bridges\HeurekaKosikApiExtension

@@ -1,6 +1,25 @@
 Heureka php košík client
 ========================
 
+Installation & setup
+--------------------
+Inslace přes [Composer](http://doc.nette.org/en/composer)
+
+    $ composer require freema/heureka-kosik-api:dev-master
+
+Registrace do [Nette](https://nette.org/cs/) `config.neon`:
+
+```yaml
+heurekaKosikApi:
+    key: XXXXXX
+    debug: TRUE
+
+extensions:
+    heurekaKosikApi: Freema\HeurekaAPI\Bridges\HeurekaKosikApiExtension
+```
+
+Knihovnu jde použít i solo bez NetteFW.
+
 Ukázka použiti API_HEUREKA
 --------------------------
 
