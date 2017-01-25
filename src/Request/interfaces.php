@@ -72,7 +72,7 @@ interface IPostOrderInvoice {
     public function setOrderId($id);
 
     /**
-     * @param string $status
+     * @param string $file
      * @return IPostOrderInvoice
      */
     public function setInvoiceFile($file);

@@ -21,6 +21,20 @@ class Api {
     const BASE_URL = 'https://ssl.heureka.cz/api/cart/';
 
     /**
+     * Heureka test endpoint URL
+     * 
+     * @var string
+     */
+    const TEST_URL = 'http://api.heureka.cz/cart/';
+    
+    /**
+     * Validacni klic
+     * 
+     * @var string
+     */
+    const VALID_API_KEY = 'validate';    
+
+    /**
      * Shop API key
      * 
      * @var string
@@ -46,15 +60,14 @@ class Api {
      */
     private $_container;
 
-    const VALID_API_KEY = 'validate';
-
     /**
      * Initialize API service
      * 
      * @param string $apiKey
      */
-    public function __construct($apiKey) {
+    public function __construct($apiKey, $debug = FALSE) {
         $this->setApiKey($apiKey);
+        $this->_debugMode = $debug;
     }
 
     /**
@@ -201,11 +214,14 @@ class Api {
         return $this->_container = $container;
     }
 
+    /**
+     * @return string
+     */
     private function _getUrl() {
-        if ($this->_debugMode == TRUE) {
-            $url = 'http://api.heureka.cz/cart/' . $this->_apiKey . '/' . $this->_apiVersion . '/';
+        if ($this->_debugMode === TRUE) {
+            $url = self::TEST_URL . $this->_apiKey . '/' . $this->_apiVersion . '/';
         } else {
-            $url = HeurekaApi::BASE_URL . $this->_apiKey . '/' . $this->_apiVersion . '/';
+            $url = self::BASE_URL . $this->_apiKey . '/' . $this->_apiVersion . '/';
         }
 
         return $url;
