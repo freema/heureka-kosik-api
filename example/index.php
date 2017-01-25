@@ -1,7 +1,7 @@
 <?php
 
-require_once dirname(__FILE__) . '/../Api.php';
-$status = new \HeurekaAPI\Api('validate');
+require_once dirname(__FILE__) . '/../src/loader.php';
+$status = new \Freema\HeurekaAPI\Api('validate');
 
 
 function dump($var)

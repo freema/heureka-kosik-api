@@ -2,40 +2,9 @@
 
 namespace Freema\HeurekaAPI;
 
-use Exception;
 use InvalidArgumentException;
 use OverflowException;
 use UnexpectedValueException;
-
-/**
- * include container!
- */
-require_once dirname(__FILE__) . '/src/IContainer.php';
-require_once dirname(__FILE__) . '/src/Container.php';
-require_once dirname(__FILE__) . '/src/exception.php';
-
-require_once dirname(__FILE__) . '/src/Request/interfaces.php';
-require_once dirname(__FILE__) . '/src/Request/GetOrderStatus.php';
-require_once dirname(__FILE__) . '/src/Request/GetPaymentStatus.php';
-require_once dirname(__FILE__) . '/src/Request/GetShopStatus.php';
-require_once dirname(__FILE__) . '/src/Request/GetStores.php';
-require_once dirname(__FILE__) . '/src/Request/PostOrderInvoice.php';
-require_once dirname(__FILE__) . '/src/Request/PostOrderNote.php';
-require_once dirname(__FILE__) . '/src/Request/PutOrderStatus.php';
-require_once dirname(__FILE__) . '/src/Request/PutPaymentStatus.php';
-
-require_once dirname(__FILE__) . '/src/Response.php';
-
-/**
- * Check PHP configuration.
- */
-if (version_compare(PHP_VERSION, '5.2.0', '<')) {
-    throw new Exception('Heureka api needs PHP 5.2.0 or newer.');
-}
-
-if (!function_exists('curl_version')) {
-    throw new Exception('Heuareka api need CURL extension.');
-}
 
 /**
  * Description of HeurekaApi
