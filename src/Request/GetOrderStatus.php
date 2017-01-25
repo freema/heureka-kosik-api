@@ -1,6 +1,6 @@
 <?php
 
-namespace HeurekaAPI;
+namespace Freema\HeurekaAPI;
 
 /**
  * Description of GetOrderStatus

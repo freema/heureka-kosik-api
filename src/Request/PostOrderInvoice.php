@@ -1,6 +1,6 @@
 <?php
 
-namespace HeurekaAPI;
+namespace Freema\HeurekaAPI;
 
 /**
  * Zaslání poznámky, které obchod vytvořil při procesu vyřizování objednávky.
