@@ -3,7 +3,6 @@
 namespace Freema\HeurekaAPI;
 
 use InvalidArgumentException;
-use OverflowException;
 use UnexpectedValueException;
 
 /**
@@ -25,7 +24,7 @@ class Api {
      * 
      * @var string
      */
-    const TEST_URL = 'http://api.heureka.cz/cart/';
+    const TEST_URL = 'http://api.heureka.cz/cart/test/';
     
     /**
      * Validacni klic
@@ -66,25 +65,30 @@ class Api {
      * @param string $apiKey
      */
     public function __construct($apiKey, $debug = FALSE) {
-        $this->setApiKey($apiKey);
-        $this->_debugMode = $debug;
+        $this->setApiKey($apiKey, $debug);
     }
 
     /**
      * Sets API key and check well-formedness
      * 
      * @param string $apiKey
-     * @throws OverflowException
+     * @param bool $debug
+     * @throws UnexpectedValueException
      */
-    public function setApiKey($apiKey) {
+    public function setApiKey($apiKey, $debug = FALSE) {
         if ($apiKey === self::VALID_API_KEY) {
             $this->_apiKey = $apiKey;
-            $this->_debugMode = TRUE;
-            return $this;
-        }else{
-            $this->_apiKey = $apiKey;
+            $this->_debugMode = FALSE;
             return $this;
         }
+
+        if (preg_match('(^[\w]{7}$)', $apiKey)) {
+            $this->_apiKey = $apiKey;
+            return $this;
+        }else{
+            throw new UnexpectedValueException('Invalid api key "' . $apiKey . '".');
+        }
+        $this->_debugMode = $debug;
     }
 
     /**
@@ -215,7 +219,7 @@ class Api {
      */
     private function _getUrl() {
         if ($this->_debugMode === TRUE) {
-            $url = self::TEST_URL . $this->_apiKey . '/' . $this->_apiVersion . '/';
+            $url = self::TEST_URL . $this->_apiKey;
         } else {
             $url = self::BASE_URL . $this->_apiKey . '/' . $this->_apiVersion . '/';
         }
