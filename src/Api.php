@@ -81,13 +81,9 @@ class Api {
             $this->_apiKey = $apiKey;
             $this->_debugMode = TRUE;
             return $this;
-        }
-
-        if (preg_match('(^[0-9abcdef]{32}$)', $apiKey)) {
+        }else{
             $this->_apiKey = $apiKey;
             return $this;
-        } else {
-            throw new UnexpectedValueException('Invalid api key "' . $apiKey . '".');
         }
     }
 
