@@ -1,0 +1,9 @@
+parameters:
+    level: max
+    paths:
+        - src
+    strictRules:
+        allRules: true
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: true
+    reportUnmatchedIgnoredErrors: true

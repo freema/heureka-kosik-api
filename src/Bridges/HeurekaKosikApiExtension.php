@@ -1,26 +1,34 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Freema\HeurekaAPI\Bridges;
 
 use Freema\HeurekaAPI\Api;
+use Nette\DI\CompilerExtension;
 
-class HeurekaKosikApiExtension extends \Nette\DI\CompilerExtension {
-
+class HeurekaKosikApiExtension extends CompilerExtension
+{
     /**
-     * @return void
+     * @var array<string, mixed>
      */
-    public function loadConfiguration() {
+    private array $defaults = [
+        'key' => null,
+        'debug' => true,
+        'autowired' => true,
+    ];
+
+    public function loadConfiguration(): void
+    {
         $container = $this->getContainerBuilder();
-        $config = $this->getConfig();
-       
-        if(!isset($config['key'])) {
-            $config['key'] = Api::VALID_API_KEY;
+        $config = $this->validateConfig($this->defaults);
+
+        if ($config['key'] === null) {
+            $config['key'] = Api::class . '::VALID_API_KEY';
         }
-        if(!isset($config['debug'])) {
-            $config['debug'] = TRUE;
-        }
-        
-        $container  ->addDefinition($this->prefix('HeurekaKosikApi'))
-                    ->setClass('Freema\HeurekaAPI\Api', array('apiKey' => $config['key'], 'debug' => $config['debug']))
-                    ->setAutowired(isset($config['autowired']) ? $config['autowired'] : TRUE);
+
+        $container->addDefinition($this->prefix('HeurekaKosikApi'))
+            ->setFactory(Api::class, [$config['key'], $config['debug']])
+            ->setAutowired($config['autowired']);
     }
 }

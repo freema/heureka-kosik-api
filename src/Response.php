@@ -1,73 +1,92 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Freema\HeurekaAPI;
+
+use ArrayAccess;
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
+use Traversable;
 
 /**
  * Description of HeurekaAPI response
  *
  * @author Tomáš Grasl <grasl.t@centrum.cz>
+ * @implements ArrayAccess<string, mixed>
+ * @implements IteratorAggregate<string, mixed>
  */
-use ArrayAccess;
-use ArrayIterator;
-use Countable;
-use IteratorAggregate;
-
-class Response implements ArrayAccess, IteratorAggregate, Countable {
-
-    function __construct($arr) {
+class Response implements ArrayAccess, IteratorAggregate, Countable
+{
+    /**
+     * @param array<string, mixed>|null $arr
+     */
+    public function __construct(?array $arr)
+    {
         if (isset($arr)) {
             foreach ($arr as $k => $v) {
-                $name = str_replace('-', '_', $k);
+                $name = str_replace('-', '_', (string) $k);
                 $this->$name = $v;
             }
         }
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
-    public function toArray() {
+    public function toArray(): array
+    {
         return (array) $this;
     }
 
-    /////*  interfaces ArrayAccess, Countable & IteratorAggregate *\\\\\\\
+    // Interfaces: ArrayAccess, Countable & IteratorAggregate
 
-    /**
-     * @return integer
-     */
-    final public function count() {
+    public function count(): int
+    {
         return count((array) $this);
     }
 
     /**
-     * @return \ArrayIterator
+     * @return Traversable<string, mixed>
      */
-    final public function getIterator() {
+    public function getIterator(): Traversable
+    {
         return new ArrayIterator($this);
     }
 
     /**
-     * @param integer | string $nm
-     * @param string $val
+     * @param string $offset
+     * @param mixed $value
      */
-    final public function offsetSet($nm, $val) {
-        $this->$nm = $val;
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        if ($offset !== null) {
+            $this->$offset = $value;
+        }
     }
 
     /**
-     * @param type $nm
-     * @return type
+     * @param string $offset
      */
-    final public function offsetGet($nm) {
-        return $this->$nm;
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->$offset ?? null;
     }
 
-    final public function offsetExists($nm) {
-        return isset($this->$nm);
+    /**
+     * @param string $offset
+     */
+    public function offsetExists(mixed $offset): bool
+    {
+        return isset($this->$offset);
     }
 
-    final public function offsetUnset($nm) {
-        unset($this->$nm);
+    /**
+     * @param string $offset
+     */
+    public function offsetUnset(mixed $offset): void
+    {
+        unset($this->$offset);
     }
-
 }

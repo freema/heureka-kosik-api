@@ -1,58 +1,50 @@
 <?php
 
-namespace Freema\HeurekaAPI;
+declare(strict_types=1);
+
+namespace Freema\HeurekaAPI\Request;
+
+use DateTime;
+use Freema\HeurekaAPI\IPutPaymentStatus;
+use Freema\HeurekaAPI\Response;
 
 /**
  * Description of PutPaymentStatus
  *
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-class PutPaymentStatus extends GetPaymentStatus implements IPutPaymentStatus {
-
-    /**
-     * @param integer $id
-     * @return \HeurekaAPI\PutPaymentStatus
-     */
-    public function setOrderId($id) {
-        $this->_param['order_id'] = (int) $id;
-
+class PutPaymentStatus extends GetPaymentStatus implements IPutPaymentStatus
+{
+    public function setOrderId(int $id): self
+    {
+        $this->param['order_id'] = $id;
         return $this;
     }
 
-    /**
-     * @param integer $status
-     * @return \HeurekaAPI\PutPaymentStatus
-     */
-    public function setStatus($status) {
-        $this->_param['status'] = (int) $status;
-
+    public function setStatus(int $status): self
+    {
+        $this->param['status'] = $status;
         return $this;
     }
 
-    /**
-     * @param string $date
-     * @return \HeurekaAPI\PutPaymentStatus
-     */
-    public function setDate($date) {
-        if ($date instanceof \DateTime) {
-            $date = $date->format('Y-M-D');
+    public function setDate(string|DateTime $date): self
+    {
+        if ($date instanceof DateTime) {
+            $date = $date->format('Y-m-d');
         }
 
-        $this->_param['date'] = (string) $date;
-
+        $this->param['date'] = $date;
         return $this;
     }
 
-    /**
-     * @return Response
-     */
-    public function execute() {
-        $response = $this->put($this->_url, $this->_param)->getResponse();
+    public function execute(): Response
+    {
+        $response = $this->put($this->url, $this->param)->getResponse();
 
-        if ($this->_isError == TRUE) {
-            $response = NULL;
+        if ($this->isError === true) {
+            $response = null;
         }
+
         return new Response($response);
     }
-
 }

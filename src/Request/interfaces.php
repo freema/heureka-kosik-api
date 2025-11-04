@@ -1,177 +1,100 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Freema\HeurekaAPI;
 
 /**
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-interface IGetOrderStatus {
-
+interface IGetOrderStatus
+{
     /**
      * ID objednávky
-     * 
-     * @param integer $id
-     * @return IGetOrderStatus
      */
-    function setOrderId($id);
+    public function setOrderId(int $id): self;
 
-    /**
-     * @return Response
-     */
-    function execute();
+    public function execute(): Response;
 }
 
 /**
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-interface IGetPaymentStatus {
+interface IGetPaymentStatus
+{
+    public function setOrderId(int $id): self;
 
-    /**
-     * @param integer $id
-     * @return IGetPaymentStatus
-     */
-    public function setOrderId($id);
-
-    /**
-     * @return Response
-     */
-    public function execute();
+    public function execute(): Response;
 }
 
 /**
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-interface IGetShopStatus {
-
-    /**
-     * @return Response
-     */
-    function execute();
+interface IGetShopStatus
+{
+    public function execute(): Response;
 }
 
 /**
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-interface IGetStores {
-
-    /**
-     * @return Response
-     */
-    function execute();
+interface IGetStores
+{
+    public function execute(): Response;
 }
 
 /**
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-interface IPostOrderInvoice {
+interface IPostOrderInvoice
+{
+    public function setOrderId(int $id): self;
 
-    /**
-     * @param integer $id
-     * @return IPostOrderInvoice
-     */
-    public function setOrderId($id);
+    public function setInvoiceFile(string $file): self;
 
-    /**
-     * @param string $file
-     * @return IPostOrderInvoice
-     */
-    public function setInvoiceFile($file);
-
-    /**
-     * @return Response
-     */
-    public function execute();
+    public function execute(): Response;
 }
 
 /**
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-interface IPostOrderNote {
+interface IPostOrderNote
+{
+    public function setOrderId(int $id): self;
 
-    /**
-     * @param integer $id
-     * @return IPostOrderNote
-     */
-    public function setOrderId($id);
+    public function setNote(string $note): self;
 
-    /**
-     * @param string $status
-     * @return IPostOrderNote
-     */
-    public function setNote($status);
-
-    /**
-     * @return Response
-     */
-    public function execute();
+    public function execute(): Response;
 }
 
 /**
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-interface IPutOrderStatus {
+interface IPutOrderStatus
+{
+    public function setOrderId(int $id): self;
 
-    /**
-     * @param integer $id
-     * @return IPutOrderStatus
-     */
-    function setOrderId($id);
+    public function setStatus(int $status): self;
 
-    /**
-     * @param integer $status
-     * @return IPutOrderStatus
-     */
-    function setStatus($status);
+    public function setTracnkingUrl(string $url): self;
 
-    /**
-     * @param string $url
-     * @return IPutOrderStatus
-     */
-    function setTracnkingUrl($url);
+    public function setNote(string $note): self;
 
-    /**
-     * @param string $note
-     * @return IPutOrderStatus
-     */
-    function setNote($note);
+    public function setExpectDeliver(string $delivary): self;
 
-    /**
-     * @param string $delivary
-     * @return IPutOrderStatus
-     */
-    function setExpectDeliver($delivary);
-
-    /**
-     * @return Response
-     */
-    function execute();
+    public function execute(): Response;
 }
 
 /**
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-interface IPutPaymentStatus {
+interface IPutPaymentStatus
+{
+    public function setOrderId(int $id): self;
 
-    /**
-     * @param integer $id
-     * @return IPutPaymentStatus
-     */
-    public function setOrderId($id);
+    public function setStatus(int $status): self;
 
-    /**
-     * @param integer $status
-     * @return IPutPaymentStatus
-     */
-    public function setStatus($status);
+    public function setDate(string $date): self;
 
-    /**
-     * @param string $date
-     * @return IPutPaymentStatus
-     */
-    public function setDate($date);
-
-    /**
-     * @return Response
-     */
-    public function execute();
+    public function execute(): Response;
 }

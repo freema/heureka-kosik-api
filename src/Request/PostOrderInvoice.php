@@ -1,90 +1,72 @@
 <?php
 
-namespace Freema\HeurekaAPI;
+declare(strict_types=1);
+
+namespace Freema\HeurekaAPI\Request;
+
+use Freema\HeurekaAPI\Container;
+use Freema\HeurekaAPI\HeurekaApiException;
+use Freema\HeurekaAPI\IPostOrderInvoice;
+use Freema\HeurekaAPI\Response;
+use SplFileInfo;
 
 /**
  * Zaslání poznámky, které obchod vytvořil při procesu vyřizování objednávky.
- * Tyto poznámky se zobrazují zákazníkovi u objednávky v jeho profilu. 
+ * Tyto poznámky se zobrazují zákazníkovi u objednávky v jeho profilu.
  *
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-class PostOrderInvoice extends Container implements IPostOrderInvoice {
+class PostOrderInvoice extends Container implements IPostOrderInvoice
+{
+    protected string $method = 'POST';
 
-    /**
-     * @var string
-     */
-    protected $_url;
-
-    /**
-     * @var string
-     */
-    protected $_method = 'POST';
-
-    /**
-     * @param string $url
-     */
-    function __construct($url) {
-        $this->_url = $url;
+    public function __construct(string $url)
+    {
+        $this->url = $url;
     }
 
-    /**
-     * @return string
-     */
-    public function getUrl() {
-        return $this->_url;
+    public function getUrl(): string
+    {
+        return $this->url;
     }
 
-    /**
-     * @param string $method
-     * @return \HeurekaAPI\PostOrderInvoice
-     */
-    public function setMethod($method) {
-        $this->_method = $method;
+    public function setMethod(string $method): self
+    {
+        $this->method = $method;
         return $this;
     }
 
-    /**
-     * @param integer $id
-     * @return \HeurekaAPI\PostOrderInvoice
-     */
-    public function setOrderId($id) {
-        $this->_param['order_id'] = (int) $id;
-
+    public function setOrderId(int $id): self
+    {
+        $this->param['order_id'] = $id;
         return $this;
     }
 
-    /**
-     * @param string $file
-     * @return \HeurekaAPI\PostOrderInvoice
-     */
-    public function setInvoiceFile($file) {
+    public function setInvoiceFile(string $file): self
+    {
         if (!file_exists($file)) {
             throw new HeurekaApiException('File does not exist!');
         }
 
-        $fileInfo = new \SplFileInfo($file);
+        $fileInfo = new SplFileInfo($file);
         $ext = '.' . pathinfo($fileInfo->getFilename(), PATHINFO_EXTENSION);
 
-        if (!$ext == '.pdf') {
+        if ($ext !== '.pdf') {
             throw new HeurekaApiException('File is not pdf format!');
         }
 
-        $this->_param['invoice'] = '@' . $file . ';type=application/pdf';
-
+        $this->param['invoice'] = '@' . $file . ';type=application/pdf';
         return $this;
     }
 
-    /**
-     * @return Response
-     */
-    public function execute() {
-        $response = $this->fileupload($this->_url, $this->_param)->getResponse();
+    public function execute(): Response
+    {
+        $response = $this->fileupload($this->url)->getResponse();
 
-        if ($this->_isError == TRUE) {
-            $response = NULL;
+        if ($this->isError === true) {
+            $response = null;
         }
 
         return new Response($response);
     }
-
 }

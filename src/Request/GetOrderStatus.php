@@ -1,88 +1,62 @@
 <?php
 
-namespace Freema\HeurekaAPI;
+declare(strict_types=1);
+
+namespace Freema\HeurekaAPI\Request;
+
+use Freema\HeurekaAPI\Container;
+use Freema\HeurekaAPI\IGetOrderStatus;
+use Freema\HeurekaAPI\Response;
 
 /**
  * Description of GetOrderStatus
- * Informace o stavu objednávky a interním čísle objednávky na Heurece. 
- * 
+ * Informace o stavu objednávky a interním čísle objednávky na Heurece.
+ *
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-class GetOrderStatus extends Container implements IGetOrderStatus {
+class GetOrderStatus extends Container implements IGetOrderStatus
+{
+    protected string $method = 'GET';
 
-    /**
-     * @var string
-     */
-    protected $_url;
-
-    /**
-     * @var array
-     */
-    protected $_param;
-
-    /**
-     * @var string
-     */
-    protected $_method = 'GET';
-
-    /**
-     * @param string $url
-     */
-    function __construct($url) {
-        $this->_url = $url;
+    public function __construct(string $url)
+    {
+        $this->url = $url;
     }
 
-    /**
-     * @return string
-     */
-    public function getUrl() {
-        return $this->_url;
+    public function getUrl(): string
+    {
+        return $this->url;
     }
 
-    /**
-     * @param string $method
-     * @return \HeurekaAPI\GetOrderStatus
-     */
-    public function setMethod($method) {
-        $this->_method = $method;
+    public function setMethod(string $method): self
+    {
+        $this->method = $method;
         return $this;
     }
 
-    /**
-     * @param string $url
-     * @return \HeurekaAPI\PutOrderStatus
-     */
-    public function setUrl($url) {
-        $this->_url = (string) $url;
+    public function setUrl(string $url): self
+    {
+        $this->url = $url;
         return $this;
     }
 
     /**
      * ID objednávky
-     * 
-     * @param integer $id
-     * @return \HeurekaAPI\PutOrderStatus
      */
-    public function setOrderId($id) {
-        $this->_param['order_id'] = (int) $id;
-
+    public function setOrderId(int $id): self
+    {
+        $this->param['order_id'] = $id;
         return $this;
     }
 
-    /**
-     * @return \Response
-     */
-    public function execute() {
+    public function execute(): Response
+    {
+        $response = $this->get($this->url, $this->param)->getResponse();
 
-        $response = $this->get($this->_url, $this->_param)->getResponse();
-
-        if ($this->_isError == TRUE) {
-            $response = NULL;
+        if ($this->isError === true) {
+            $response = null;
         }
 
-        $return = new Response($response);
-
-        return $return;
+        return new Response($response);
     }
-
 }
