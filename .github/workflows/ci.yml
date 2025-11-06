@@ -7,6 +7,40 @@ on:
     branches: [ main, master ]
 
 jobs:
+  code-quality:
+    name: Code Quality (PHP 8.3)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          extensions: curl, json
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Cache Composer packages
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-8.3-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-8.3-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHPStan
+        run: composer phpstan
+
+      - name: Run PHP CS Fixer
+        run: composer cs-check
+
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -25,9 +59,6 @@ jobs:
           extensions: curl, json
           coverage: none
 
-      - name: Validate composer.json
-        run: composer validate --strict
-
       - name: Cache Composer packages
         uses: actions/cache@v3
         with:
@@ -39,14 +70,8 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
-      - name: Run PHPStan
-        run: composer phpstan
-
-      - name: Run PHP CS Fixer
-        run: composer cs-check
-
   lowest:
-    name: PHP 8.1 - Lowest
+    name: PHP 8.1 - Lowest Dependencies
     runs-on: ubuntu-latest
 
     steps:
@@ -61,6 +86,3 @@ jobs:
 
       - name: Install dependencies
         run: composer update --prefer-lowest --prefer-dist --no-progress
-
-      - name: Run PHPStan
-        run: composer phpstan
