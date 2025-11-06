@@ -1,88 +1,113 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Freema\HeurekaAPI;
+
+use CurlHandle;
 
 /**
  * Description of Container
  *
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-abstract class Container implements IContainer {
+abstract class Container implements IContainer
+{
+    protected ?CurlHandle $request = null;
 
-    /** curl_init() */
-    protected $request;
+    protected mixed $response = null;
 
-    /** @var mix */
-    protected $response;
+    /**
+     * @var array<string, mixed>|null
+     */
+    private ?array $decoded = null;
 
-    /** @var array */
-    private $_decodet;
+    protected string $url;
 
-    /** @var string */
-    protected $_url;
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $param = [];
 
-    /** @var array */
-    protected $_param;
+    private int $httpCode = 0;
 
-    /** @var integer */
-    private $_httpCode;
+    protected bool $isError = false;
 
-    /** @var bool */
-    protected $_isError = FALSE;
+    /**
+     * @var array<string, mixed>|null
+     */
+    protected ?array $errorMessage = null;
 
-    /** @var array */
-    protected $_errorMessage = NULL;
-
-    protected function get($url, $vars = array()) {
-        if (!empty($vars)) {
+    /**
+     * @param array<string, mixed> $vars
+     */
+    protected function get(string $url, array $vars = []): self
+    {
+        if ($vars !== []) {
             $url .= (stripos($url, '?') !== false) ? '&' : '?';
-            $url .= (is_string($vars)) ? $vars : http_build_query($vars, '', '&');
+            $url .= http_build_query($vars, '', '&');
         }
         return $this->request('GET', $url);
     }
 
-    protected function head($url, $vars = array()) {
+    /**
+     * @param array<string, mixed> $vars
+     */
+    protected function head(string $url, array $vars = []): self
+    {
         return $this->request('HEAD', $url, $vars);
     }
 
-    protected function post($url, $vars = array()) {
+    /**
+     * @param array<string, mixed> $vars
+     */
+    protected function post(string $url, array $vars = []): self
+    {
         return $this->request('POST', $url, $vars);
     }
 
-    protected function put($url, $vars = array()) {
+    /**
+     * @param array<string, mixed> $vars
+     */
+    protected function put(string $url, array $vars = []): self
+    {
         return $this->request('PUT', $url, $vars);
     }
 
     /**
-     * @param string $method
-     * @param string $url
-     * @param array $vars
-     * @return \HeurekaAPI\Container
+     * @param array<string, mixed> $vars
      */
-    protected function request($method, $url, $vars = array()) {
-        $this->error = '';
-        $this->request = curl_init();
+    protected function request(string $method, string $url, array $vars = []): self
+    {
+        $curlHandle = curl_init();
 
-        if (is_array($vars))
-            $vars = http_build_query($vars, '', '&');
+        if (!$curlHandle instanceof \CurlHandle) {
+            throw new HeurekaApiException('Failed to initialize cURL');
+        }
 
-        $this->set_request_method($method, $vars);
-        $this->set_request_options($url);
+        $this->request = $curlHandle;
+        $varsString = http_build_query($vars, '', '&');
 
-        $response = curl_exec($this->request);
-        $this->_httpCode = curl_getinfo($this->request, CURLINFO_HTTP_CODE);
+        $this->setRequestMethod($method, $varsString);
+        $this->setRequestOptions($url);
+
+        $response = curl_exec($curlHandle);
+        $httpCodeResult = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
+        $this->httpCode = $httpCodeResult;
 
         $this->response = $response;
 
-        curl_close($this->request);
+        curl_close($curlHandle);
+        $this->request = null;
         return $this;
     }
 
-    /**
-     * @param string $method
-     * @param string $vars
-     */
-    protected function set_request_method($method, $vars) {
+    protected function setRequestMethod(string $method, string $vars): void
+    {
+        if ($this->request === null) {
+            throw new HeurekaApiException('cURL handle is not initialized');
+        }
+
         switch (strtoupper($method)) {
             case 'HEAD':
                 curl_setopt($this->request, CURLOPT_NOBODY, true);
@@ -97,19 +122,27 @@ abstract class Container implements IContainer {
             case 'PUT':
                 curl_setopt($this->request, CURLOPT_CUSTOMREQUEST, $method);
                 curl_setopt($this->request, CURLOPT_POSTFIELDS, $vars);
+                break;
             default:
                 curl_setopt($this->request, CURLOPT_CUSTOMREQUEST, $method);
         }
     }
 
-    protected function fileupload($url) {
-        $this->request = curl_init();
+    protected function fileupload(string $url): self
+    {
+        $curlHandle = curl_init();
+
+        if (!$curlHandle instanceof \CurlHandle) {
+            throw new HeurekaApiException('Failed to initialize cURL');
+        }
+
+        $this->request = $curlHandle;
 
         curl_setopt($this->request, CURLOPT_URL, $url);
-        curl_setopt($this->request, CURLOPT_HTTPHEADER, array("Content-type: multipart/form-data"));
+        curl_setopt($this->request, CURLOPT_HTTPHEADER, ['Content-type: multipart/form-data']);
         curl_setopt($this->request, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->request, CURLOPT_POST, true);
-        curl_setopt($this->request, CURLOPT_POSTFIELDS, $this->_param);
+        curl_setopt($this->request, CURLOPT_POSTFIELDS, $this->param);
 
         $this->response = curl_exec($this->request);
         curl_close($this->request);
@@ -118,43 +151,46 @@ abstract class Container implements IContainer {
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>|null
      */
-    protected function getResponse() {
-        $this->_decodet = json_decode($this->response, true);
-        $this->_checkError();
+    protected function getResponse(): ?array
+    {
+        $responseString = is_string($this->response) ? $this->response : '';
+        $decoded = json_decode($responseString, true);
+        $this->decoded = is_array($decoded) ? $decoded : null;
+        $this->checkError();
 
-        return $this->_decodet;
+        return $this->decoded;
     }
 
-    private function _checkError() {
-        if ($this->_httpCode >= 400) {
-            $this->_isError = TRUE;
-            $this->_errorMessage = $this->_decodet;
+    private function checkError(): void
+    {
+        if ($this->httpCode >= 400) {
+            $this->isError = true;
+            $this->errorMessage = $this->decoded;
         }
     }
 
-    /**
-     * @return bool
-     */
-    public function hasError() {
-        return $this->_isError;
+    public function hasError(): bool
+    {
+        return $this->isError;
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>|null
      */
-    public function getErrorMessage() {
-        return $this->_errorMessage;
+    public function getErrorMessage(): ?array
+    {
+        return $this->errorMessage;
     }
 
-    /**
-     * @param string $url
-     * @param string $vars
-     */
-    protected function set_request_options($url) {
+    protected function setRequestOptions(string $url): void
+    {
+        if ($this->request === null) {
+            throw new HeurekaApiException('cURL handle is not initialized');
+        }
+
         curl_setopt($this->request, CURLOPT_URL, $url);
-        curl_setopt($this->request, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($this->request, CURLOPT_RETURNTRANSFER, true);
     }
-
 }

@@ -1,76 +1,67 @@
 <?php
 
-namespace Freema\HeurekaAPI;
+declare(strict_types=1);
+
+namespace Freema\HeurekaAPI\Request;
+
+use Freema\HeurekaAPI\IPutOrderStatus;
+use Freema\HeurekaAPI\Response;
 
 /**
  * Description of order/status api
  *
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-class PutOrderStatus extends GetOrderStatus implements IPutOrderStatus {
-
-    /**
-     * @param integer $id
-     * @return \HeurekaAPI\PutOrderStatus
-     */
-    public function setOrderId($id) {
-        $this->_param['order_id'] = (int) $id;
-
+class PutOrderStatus extends GetOrderStatus implements IPutOrderStatus
+{
+    public function setOrderId(int $id): self
+    {
+        $this->param['order_id'] = $id;
         return $this;
     }
 
-    /**
-     * @param integer $status
-     * @return \HeurekaAPI\PutOrderStatus
-     */
-    public function setStatus($status) {
-        $this->_param['status'] = (int) $status;
-
+    public function setStatus(int $status): self
+    {
+        $this->param['status'] = $status;
         return $this;
     }
 
-    /**
-     * @param string $url
-     * @return \HeurekaAPI\PutOrderStatus
-     */
-    public function setTracnkingUrl($url) {
-        $this->_param['transport']['tracnking_url'] = (string) $url;
-
+    public function setTracnkingUrl(string $url): self
+    {
+        if (!isset($this->param['transport']) || !is_array($this->param['transport'])) {
+            $this->param['transport'] = [];
+        }
+        $this->param['transport']['tracnking_url'] = $url;
         return $this;
     }
 
-    /**
-     * @param string $note
-     * @return \HeurekaAPI\PutOrderStatus
-     */
-    public function setNote($note) {
-        $this->_param['transport']['note'] = (string) $note;
-
+    public function setNote(string $note): self
+    {
+        if (!isset($this->param['transport']) || !is_array($this->param['transport'])) {
+            $this->param['transport'] = [];
+        }
+        $this->param['transport']['note'] = $note;
         return $this;
     }
 
-    /**
-     * @param string $delivary
-     * @return \HeurekaAPI\PutOrderStatus
-     */
-    public function setExpectDeliver($delivary) {
-        $this->_param['transport']['note'] = (string) $delivary;
-
+    public function setExpectDeliver(string $delivary): self
+    {
+        // BUGFIX: This was incorrectly setting 'note' instead of 'expect_deliver'
+        if (!isset($this->param['transport']) || !is_array($this->param['transport'])) {
+            $this->param['transport'] = [];
+        }
+        $this->param['transport']['expect_deliver'] = $delivary;
         return $this;
     }
 
-    /**
-     * @return Response
-     */
-    public function execute() {
+    public function execute(): Response
+    {
+        $response = $this->put($this->url, $this->param)->getResponse();
 
-        $response = $this->put($this->_url, $this->_param)->getResponse();
-
-        if ($this->_isError == TRUE) {
-            $response = NULL;
+        if ($this->isError === true) {
+            $response = null;
         }
 
         return new Response($response);
     }
-
 }

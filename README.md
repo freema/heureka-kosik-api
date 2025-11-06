@@ -1,115 +1,205 @@
-Heureka php košík client
-========================
+# Heureka Košík API Client
 
-Installation & setup
---------------------
-Inslace přes [Composer](http://doc.nette.org/en/composer)
+Modern PHP 8.1+ client for Heureka Košík API with full type safety and strict standards.
 
-    $ composer require freema/heureka-kosik-api:dev-master
+[![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue)](https://php.net)
 
-Registrace do [Nette](https://nette.org/cs/) `config.neon`:
+## Requirements
 
-```yaml
-heurekaKosikApi:
-    key: XXXXXX
-    debug: TRUE
+- PHP 8.1 or higher
+- ext-curl
+- ext-json
 
-extensions:
-    heurekaKosikApi: Freema\HeurekaAPI\Bridges\HeurekaKosikApiExtension
+## Installation
+
+Install via [Composer](https://getcomposer.org):
+
+```bash
+composer require freema/heureka-kosik-api
 ```
 
-Knihovnu jde použít i solo bez NetteFW.
+## Nette Framework Integration
 
-Ukázka použiti API_HEUREKA
---------------------------
+Register in `config.neon`:
 
-Inicializace
-------------
+```yaml
+extensions:
+    heurekaKosikApi: Freema\HeurekaAPI\Bridges\HeurekaKosikApiExtension
+
+heurekaKosikApi:
+    key: YOUR_API_KEY
+    debug: false
+    autowired: true
+```
+
+## Standalone Usage
+
+The library can be used without Nette Framework:
+
+## Quick Start
+
+### Initialization
 
 ```php
 <?php
-$container = new \Freema\HeurekaAPI\Api($apiKey);
+
+declare(strict_types=1);
+
+use Freema\HeurekaAPI\Api;
+
+$api = new Api('YOUR_API_KEY');
+
+// For testing/debug mode:
+$api = new Api('YOUR_API_KEY', debug: true);
 ```
 
-GET payment/status
-------------------
+## API Methods
+
+### GET payment/status
+
+Get payment status for an order.
 
 ```php
-$response = $container->getPaymentStatus()->setOrderId(22)->execute();
+$response = $api->getPaymentStatus()
+    ->setOrderId(22)
+    ->execute();
 
 $result = $response->toArray();
+
+if ($api->getContainer()->hasError()) {
+    $error = $api->getContainer()->getErrorMessage();
+}
 ```
 
-PUT order/status
-----------------
-Nastavení stavu objednávy na Heurece.
-Je důležité, aby každá změna objednávky byla přenesena zpět do Heureky. Jenom tak je možné zákazníkům zobrazit v jakém stavu se nachází jejich objednávka.     
+### PUT order/status
+
+Update order status on Heureka. It's important that every order change is transferred back to Heureka so customers can see the current status of their orders.
 
 ```php
-$response = $container  ->putOrderStatus()
-                        ->setOrderId(22)
-                        ->setStatus(1)
-                        ->setTracnkingUrl('http://www.exmaple.com/?id=101010&transport')
-                        ->setNote('test')
-                        ->setExpectDeliver('2013-01-10')
-                        ->execute();
+$response = $api->putOrderStatus()
+    ->setOrderId(22)
+    ->setStatus(1)
+    ->setTracnkingUrl('https://www.example.com/?id=101010&transport')
+    ->setNote('Objednávka je připravena k odeslání')
+    ->setExpectDeliver('2025-01-15')
+    ->execute();
 ```
 
-PUT payment/status
-------------------
-Nastavení stavu platby na Heurece.
-Tato metoda slouží k nastavení platby při dobírce nebo platbě v hotovosti na pobočce obchodu.
-```php
-$response = $container  ->putPaymentStatus()
-                        ->setOrderId(22)
-                        ->setStatus(1)
-                        ->setDate('2013-01-10') // akceptuje i DateTime object 
-                        ->execute();
-```
+### PUT payment/status
 
-GET order/status
-----------------
-Informace o stavu objednávky a interním čísle objednávky na Heurece.
-```php
-$response = $container  ->getOrderStatus()
-                        ->setOrderId(22)
-                        ->execute();
-```
-
-GET stores
-----------------
-Informace o pobočkách / výdejních místech, které má obchod uložené na Heurece.
-```php
-$response = $container->getStores()->execute();
-```
-
-GET shop/status
---------------
-Informace o aktivaci obchodu v Košíku.
-Slouží k zjištění zda je obchod spuštěn v Košíku či nikoliv. Pokud je Košík vypnutý z důvodu chyby v API nebo nějaké procesní chyby, je o tom napsáno v parametru message.
-Informace o aktivaci / dekativaci jsou vždy na 30 minut uložné ve vyrovnávací paměti (cache). Pokud testujete stav obchodu pomocí cronu zvolte interval 30 minut a více.
+Update payment status on Heureka. This method is used for cash on delivery or cash payment at a store branch.
 
 ```php
-$response = $container->getShopStatus()->execute();
-$response = $container->getStores()->execute();
+use DateTime;
+
+$response = $api->putPaymentStatus()
+    ->setOrderId(22)
+    ->setStatus(1)
+    ->setDate('2025-01-15') // Accepts string or DateTime object
+    ->execute();
+
+// Or with DateTime:
+$response = $api->putPaymentStatus()
+    ->setOrderId(22)
+    ->setStatus(1)
+    ->setDate(new DateTime('2025-01-15'))
+    ->execute();
 ```
 
-POST order/note
----------------
-Zaslání poznámky, které obchod vytvořil při procesu vyřizování objednávky.
-Tyto poznámky se zobrazují zákazníkovi u objednávky v jeho profilu. 
+### GET order/status
+
+Get information about order status and internal order number on Heureka.
 
 ```php
-$response = $container->postOrderNote()->setOrderId(22)->setNote('test')->execute();
+$response = $api->getOrderStatus()
+    ->setOrderId(22)
+    ->execute();
 ```
 
-POST order/invoice
-------------------
-Zaslaní faktury (dokladu) k objednávce.
-Obchody, které posílají faktury zákazníkům v elektronické podobě, ji musí zaslat také Heurece, tak aby je bylo možné opětovně poslat nebo umožnit jejich stažení v přehledu objednávek.
-Maximální velikost souboru s fakturou je 3 MB a souboru musí být v PDF.
-Tato metoda předpokládá multipart data u parametru file. POST požadavek by měl mít nastaven Content-type na multipart / form-data.
+### GET stores
+
+Get information about branches/pickup locations that the shop has stored on Heureka.
 
 ```php
-$response = $container->postOrderInvoice()->setInvoiceFile('test.pdf')->setOrderId(22)->execute();
+$response = $api->getStores()->execute();
 ```
+
+### GET shop/status
+
+Get information about shop activation in Košík. Used to determine whether the shop is running in Košík or not. If Košík is disabled due to an API error or process error, it's described in the message parameter.
+
+**Note:** Activation/deactivation information is cached for 30 minutes. If testing shop status via cron, use an interval of 30 minutes or more.
+
+```php
+$response = $api->getShopStatus()->execute();
+```
+
+### POST order/note
+
+Send a note that the shop created during the order processing. These notes are displayed to the customer with their order in their profile.
+
+```php
+$response = $api->postOrderNote()
+    ->setOrderId(22)
+    ->setNote('Zásilka bude doručena zítra dopoledne')
+    ->execute();
+```
+
+### POST order/invoice
+
+Send an invoice (receipt) for an order. Shops that send invoices to customers electronically must also send them to Heureka so they can be resent or made available for download in the order overview.
+
+- Maximum file size: 3 MB
+- Format: PDF only
+
+```php
+$response = $api->postOrderInvoice()
+    ->setOrderId(22)
+    ->setInvoiceFile('/path/to/invoice.pdf')
+    ->execute();
+```
+
+## Development
+
+### Code Quality Tools
+
+```bash
+# Run PHPStan (level 8 with strict rules)
+composer phpstan
+
+# Run PHP CS Fixer (check)
+composer cs-check
+
+# Run PHP CS Fixer (fix)
+composer cs-fix
+
+# Run tests
+composer test
+```
+
+## Migration from v1.x
+
+### Breaking Changes
+
+1. **PHP Version**: Now requires PHP 8.1+
+2. **Namespace Changes**: Request classes moved to `Freema\HeurekaAPI\Request\` namespace
+3. **Type Safety**: All methods now have strict type hints and return types
+4. **Removed**: Manual loader.php (use Composer autoload)
+
+### Updated Code
+
+**Before (v1.x):**
+```php
+$container = new \Freema\HeurekaAPI\Api($apiKey);
+$response = $container->getOrderStatus()->setOrderId('22')->execute();
+```
+
+**After (v2.x):**
+```php
+$api = new \Freema\HeurekaAPI\Api($apiKey);
+$response = $api->getOrderStatus()->setOrderId(22)->execute();
+```
+
+## License
+
+This library is licensed under BSD-3-Clause, GPL-2.0-or-later, and GPL-3.0-or-later.

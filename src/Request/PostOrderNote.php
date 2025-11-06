@@ -1,83 +1,64 @@
 <?php
 
-namespace Freema\HeurekaAPI;
+declare(strict_types=1);
+
+namespace Freema\HeurekaAPI\Request;
+
+use Freema\HeurekaAPI\Container;
+use Freema\HeurekaAPI\HeurekaApiException;
+use Freema\HeurekaAPI\IPostOrderNote;
+use Freema\HeurekaAPI\Response;
 
 /**
  * Zaslání poznámky, které obchod vytvořil při procesu vyřizování objednávky.
- * Tyto poznámky se zobrazují zákazníkovi u objednávky v jeho profilu. 
+ * Tyto poznámky se zobrazují zákazníkovi u objednávky v jeho profilu.
  *
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-class PostOrderNote extends Container implements IPostOrderNote {
+class PostOrderNote extends Container implements IPostOrderNote
+{
+    protected string $method = 'POST';
 
-    /**
-     * @var string
-     */
-    protected $_url;
-
-    /**
-     * @var string
-     */
-    protected $_method = 'POST';
-
-    /**
-     * @param string $url
-     */
-    function __construct($url) {
-        $this->_url = $url;
+    public function __construct(string $url)
+    {
+        $this->url = $url;
     }
 
-    /**
-     * @return string
-     */
-    public function getUrl() {
-        return $this->_url;
+    public function getUrl(): string
+    {
+        return $this->url;
     }
 
-    /**
-     * @param string $method
-     * @return \HeurekaAPI\PostOrderNote
-     */
-    public function setMethod($method) {
-        $this->_method = $method;
+    public function setMethod(string $method): self
+    {
+        $this->method = $method;
         return $this;
     }
 
-    /**
-     * @param integer $id
-     * @return \HeurekaAPI\PostOrderNote
-     */
-    public function setOrderId($id) {
-        $this->_param['order_id'] = (int) $id;
-
+    public function setOrderId(int $id): self
+    {
+        $this->param['order_id'] = $id;
         return $this;
     }
 
-    /**
-     * @param string $note
-     * @return \HeurekaAPI\PostOrderNote
-     */
-    public function setNote($note) {
+    public function setNote(string $note): self
+    {
         if (strlen($note) >= 1000) {
-            throw new \HeurekaAPI\HeurekaApiException('Maximalni delka textu v poznamce muže byt jen 1000 znaků');
+            throw new HeurekaApiException('Maximalni delka textu v poznamce muže byt jen 1000 znaků');
         }
 
-        $this->_param['note'] = (string) $note;
-
+        $this->param['note'] = $note;
         return $this;
     }
 
-    /**
-     * @return Response
-     */
-    public function execute() {
-        $response = $this->post($this->_url, $this->_param)->getResponse();
+    public function execute(): Response
+    {
+        $response = $this->post($this->url, $this->param)->getResponse();
 
-        if ($this->_isError == TRUE) {
-            $response = NULL;
+        if ($this->isError === true) {
+            $response = null;
         }
 
         return new Response($response);
     }
-
 }

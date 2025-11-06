@@ -1,73 +1,55 @@
 <?php
 
-namespace Freema\HeurekaAPI;
+declare(strict_types=1);
+
+namespace Freema\HeurekaAPI\Request;
+
+use Freema\HeurekaAPI\Container;
+use Freema\HeurekaAPI\IGetShopStatus;
+use Freema\HeurekaAPI\Response;
 
 /**
- *  Informace o aktivaci obchodu v Košíku.
- *  Slouží k zjištění zda je obchod spuštěn v Košíku či nikoliv.
- *  Pokud je Košík vypnutý z důvodu chyby v API nebo nějaké procesní chyby,
- *  je o tom napsáno v parametru message. 
- * 
+ * Informace o aktivaci obchodu v Košíku.
+ * Slouží k zjištění zda je obchod spuštěn v Košíku či nikoliv.
+ * Pokud je Košík vypnutý z důvodu chyby v API nebo nějaké procesní chyby,
+ * je o tom napsáno v parametru message.
+ *
  * @author Tomáš Grasl <grasl.t@centrum.cz>
  */
-class GetShopStatus extends Container implements IGetShopStatus {
+class GetShopStatus extends Container implements IGetShopStatus
+{
+    protected string $method = 'GET';
 
-    /**
-     * @var string
-     */
-    protected $_url;
-
-    /**
-     * @var string
-     */
-    protected $_method = 'GET';
-
-    /**
-     * @param string $url
-     */
-    function __construct($url) {
-        $this->_url = $url;
+    public function __construct(string $url)
+    {
+        $this->url = $url;
     }
 
-    /**
-     * @return string
-     */
-    public function getUrl() {
-        return $this->_url;
+    public function getUrl(): string
+    {
+        return $this->url;
     }
 
-    /**
-     * @param string $method
-     * @return \HeurekaAPI\GetOrderStatus
-     */
-    public function setMethod($method) {
-        $this->_method = $method;
+    public function setMethod(string $method): self
+    {
+        $this->method = $method;
         return $this;
     }
 
-    /**
-     * @param string $url
-     * @return \HeurekaAPI\PutOrderStatus
-     */
-    public function setUrl($url) {
-        $this->_url = (string) $url;
+    public function setUrl(string $url): self
+    {
+        $this->url = $url;
         return $this;
     }
 
-    /**
-     * @return Response
-     */
-    public function execute() {
+    public function execute(): Response
+    {
+        $response = $this->get($this->url)->getResponse();
 
-        $response = $this->get($this->_url)->getResponse();
-
-        if ($this->_isError == TRUE) {
-            $response = NULL;
+        if ($this->isError === true) {
+            $response = null;
         }
 
-        $return = new Response($response);
-
-        return $return;
+        return new Response($response);
     }
-
 }

@@ -7,3 +7,17 @@ nbdist/
 .nb-gradle/
 nbproject/project.properties
 nbproject/project.xml
+
+### Composer ###
+/vendor/
+composer.lock
+
+### PHP ###
+.phpunit.cache
+.php-cs-fixer.cache
+.phpunit.result.cache
+
+### IDEs ###
+.idea/
+.vscode/
+*.log
