@@ -7,4 +7,8 @@ parameters:
         - src
     checkMissingIterableValueType: true
     checkGenericClassInNonGenericObjectType: true
-    reportUnmatchedIgnoredErrors: true
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        # Nette DI is optional dependency - ignore errors in Bridge extension
+        - '#Class Freema\\HeurekaAPI\\Bridges\\HeurekaKosikApiExtension extends unknown class Nette\\DI\\CompilerExtension#'
+        - '#Call to an undefined method Freema\\HeurekaAPI\\Bridges\\HeurekaKosikApiExtension::(getContainerBuilder|validateConfig|prefix)\(\)#'
