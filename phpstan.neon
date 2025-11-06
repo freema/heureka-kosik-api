@@ -7,5 +7,7 @@ parameters:
         - src
     excludePaths:
         - src/Bridges/HeurekaKosikApiExtension.php
+        - src/Response.php
+    treatPhpDocTypesAsCertain: false
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false

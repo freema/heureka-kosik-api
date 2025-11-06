@@ -81,7 +81,7 @@ abstract class Container implements IContainer
     {
         $curlHandle = curl_init();
 
-        if ($curlHandle === false) {
+        if (!$curlHandle instanceof \CurlHandle) {
             throw new HeurekaApiException('Failed to initialize cURL');
         }
 
@@ -93,7 +93,7 @@ abstract class Container implements IContainer
 
         $response = curl_exec($curlHandle);
         $httpCodeResult = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
-        $this->httpCode = is_int($httpCodeResult) ? $httpCodeResult : 0;
+        $this->httpCode = $httpCodeResult;
 
         $this->response = $response;
 
@@ -132,7 +132,7 @@ abstract class Container implements IContainer
     {
         $curlHandle = curl_init();
 
-        if ($curlHandle === false) {
+        if (!$curlHandle instanceof \CurlHandle) {
             throw new HeurekaApiException('Failed to initialize cURL');
         }
 
