@@ -164,7 +164,7 @@ $response = $api->postOrderInvoice()
 ### Code Quality Tools
 
 ```bash
-# Run PHPStan
+# Run PHPStan (level 8 with strict rules)
 composer phpstan
 
 # Run PHP CS Fixer (check)
