@@ -19,7 +19,19 @@
 		"phpunit/phpunit": "^10.0",
 		"phpstan/phpstan": "^1.10",
 		"phpstan/phpstan-strict-rules": "^1.5",
-		"friendsofphp/php-cs-fixer": "^3.40"
+		"friendsofphp/php-cs-fixer": "^3.40",
+		"nette/di": "^3.0",
+		"nette/schema": "^1.2",
+		"symfony/config": "^6.0|^7.0",
+		"symfony/dependency-injection": "^6.0|^7.0",
+		"symfony/http-kernel": "^6.0|^7.0"
+	},
+	"suggest": {
+		"nette/di": "Required for Nette Framework integration (^3.0)",
+		"nette/schema": "Required for Nette Framework integration (^1.2)",
+		"symfony/config": "Required for Symfony Framework integration (^6.0|^7.0)",
+		"symfony/dependency-injection": "Required for Symfony Framework integration (^6.0|^7.0)",
+		"symfony/http-kernel": "Required for Symfony Framework integration (^6.0|^7.0)"
 	},
 	"autoload": {
 		"psr-4": {
