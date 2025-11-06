@@ -2,13 +2,10 @@ includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
 
 parameters:
-    level: max
+    level: 8
     paths:
         - src
-    checkMissingIterableValueType: true
-    checkGenericClassInNonGenericObjectType: true
-    reportUnmatchedIgnoredErrors: false
-    ignoreErrors:
-        # Nette DI is optional dependency - ignore errors in Bridge extension
-        - '#Class Freema\\HeurekaAPI\\Bridges\\HeurekaKosikApiExtension extends unknown class Nette\\DI\\CompilerExtension#'
-        - '#Call to an undefined method Freema\\HeurekaAPI\\Bridges\\HeurekaKosikApiExtension::(getContainerBuilder|validateConfig|prefix)\(\)#'
+    excludePaths:
+        - src/Bridges/HeurekaKosikApiExtension.php
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false

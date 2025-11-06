@@ -91,13 +91,14 @@ abstract class Container implements IContainer
         $this->setRequestMethod($method, $varsString);
         $this->setRequestOptions($url);
 
-        $response = curl_exec($this->request);
-        $httpCodeResult = curl_getinfo($this->request, CURLINFO_HTTP_CODE);
+        $response = curl_exec($curlHandle);
+        $httpCodeResult = curl_getinfo($curlHandle, CURLINFO_HTTP_CODE);
         $this->httpCode = is_int($httpCodeResult) ? $httpCodeResult : 0;
 
         $this->response = $response;
 
-        curl_close($this->request);
+        curl_close($curlHandle);
+        $this->request = null;
         return $this;
     }
 

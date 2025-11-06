@@ -63,7 +63,7 @@ class Response implements ArrayAccess, IteratorAggregate, Countable
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        if ($offset !== null && is_string($offset)) {
+        if ($offset !== null) {
             $this->$offset = $value;
         }
     }
