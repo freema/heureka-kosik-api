@@ -18,23 +18,137 @@ Install via [Composer](https://getcomposer.org):
 composer require freema/heureka-kosik-api
 ```
 
-## Nette Framework Integration
+## Framework Integration
 
-Register in `config.neon`:
+### Nette Framework
+
+The library provides seamless integration with Nette Framework through a DI Extension.
+
+#### Installation
+
+Register the extension in your `config.neon`:
 
 ```yaml
 extensions:
     heurekaKosikApi: Freema\HeurekaAPI\Bridges\HeurekaKosikApiExtension
 
 heurekaKosikApi:
-    key: YOUR_API_KEY
-    debug: false
-    autowired: true
+    key: %env.HEUREKA_API_KEY%  # Recommended: use environment variable
+    debug: false                 # Set to true for test API endpoint
+    autowired: true             # Enable autowiring (default: true)
+```
+
+#### Usage in Nette
+
+The API service is automatically registered in the DI container and can be autowired:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Presenters;
+
+use Freema\HeurekaAPI\Api;
+use Nette\Application\UI\Presenter;
+
+class OrderPresenter extends Presenter
+{
+    public function __construct(
+        private Api $heurekaApi,
+    ) {
+    }
+
+    public function actionUpdateStatus(int $orderId): void
+    {
+        $response = $this->heurekaApi->putOrderStatus()
+            ->setOrderId($orderId)
+            ->setStatus(1)
+            ->execute();
+    }
+}
+```
+
+### Symfony Framework
+
+The library includes a Symfony Bundle for easy integration with Symfony applications.
+
+#### Installation
+
+1. Register the bundle in `config/bundles.php`:
+
+```php
+<?php
+
+return [
+    // ... other bundles
+    Freema\HeurekaAPI\Bundle\HeurekaKosikApiBundle::class => ['all' => true],
+];
+```
+
+2. Create configuration file `config/packages/heureka_kosik_api.yaml`:
+
+```yaml
+heureka_kosik_api:
+    api_key: '%env(HEUREKA_API_KEY)%'  # Use environment variable
+    debug: false                        # Set to true for test API endpoint
+```
+
+3. Set your API key in `.env` or `.env.local`:
+
+```bash
+HEUREKA_API_KEY=your_api_key_here
+```
+
+#### Usage in Symfony
+
+The API service is automatically registered and can be autowired or accessed via the service container:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use Freema\HeurekaAPI\Api;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class OrderController extends AbstractController
+{
+    public function __construct(
+        private Api $heurekaApi,
+    ) {
+    }
+
+    #[Route('/order/{id}/update-status', name: 'order_update_status')]
+    public function updateStatus(int $id): Response
+    {
+        $response = $this->heurekaApi->putOrderStatus()
+            ->setOrderId($id)
+            ->setStatus(1)
+            ->setTracnkingUrl('https://tracking.example.com/'. $id)
+            ->execute();
+
+        // Handle response...
+        return new Response('Status updated');
+    }
+}
+```
+
+You can also access the service directly from the container:
+
+```php
+$api = $this->container->get('heureka_kosik_api');
+// or
+$api = $this->container->get(\Freema\HeurekaAPI\Api::class);
 ```
 
 ## Standalone Usage
 
-The library can be used without Nette Framework:
+The library can be used without any framework:
 
 ## Quick Start
 
