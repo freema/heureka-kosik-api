@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Modern PHP 8.1+ support with strict type declarations
 - Full type hints and return type declarations for all methods
 - PSR-4 autoloading
-- PHPStan level max static analysis
+- PHPStan level 8 static analysis with strict rules
 - PHP CS Fixer configuration for code quality
 - PHPUnit configuration
 - GitHub Actions CI workflow
