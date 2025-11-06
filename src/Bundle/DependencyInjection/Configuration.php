@@ -25,22 +25,20 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('heureka_kosik_api');
-        /** @var \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $rootNode */
-        $rootNode = $treeBuilder->getRootNode();
 
-        /** @var \Symfony\Component\Config\Definition\Builder\NodeBuilder $children */
-        $children = $rootNode->children();
-
-        $children
-            ->scalarNode('api_key')
-                ->isRequired()
-                ->cannotBeEmpty()
-                ->info('Your Heureka Košík API key (recommended to use environment variable)')
-                ->example('%env(HEUREKA_API_KEY)%')
-            ->end()
-            ->booleanNode('debug')
-                ->defaultFalse()
-                ->info('Enable debug mode to use test API endpoint')
+        // @phpstan-ignore-next-line
+        $treeBuilder->getRootNode()
+            ->children()
+                ->scalarNode('api_key')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->info('Your Heureka Košík API key (recommended to use environment variable)')
+                    ->example('%env(HEUREKA_API_KEY)%')
+                ->end()
+                ->booleanNode('debug')
+                    ->defaultFalse()
+                    ->info('Enable debug mode to use test API endpoint')
+                ->end()
             ->end()
         ;
 
