@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Freema\HeurekaAPI;
 
-use InvalidArgumentException;
 use UnexpectedValueException;
 
 /**

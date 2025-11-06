@@ -15,6 +15,7 @@ use Traversable;
  * Description of HeurekaAPI response
  *
  * @author Tomáš Grasl <grasl.t@centrum.cz>
+ *
  * @implements ArrayAccess<string, mixed>
  * @implements IteratorAggregate<string, mixed>
  */
