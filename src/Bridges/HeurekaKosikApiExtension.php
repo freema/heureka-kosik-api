@@ -52,6 +52,7 @@ class HeurekaKosikApiExtension extends CompilerExtension
     public function loadConfiguration(): void
     {
         $container = $this->getContainerBuilder();
+        /** @var \stdClass{key: ?string, debug: bool, autowired: bool} $config */
         $config = $this->getConfig();
 
         // Validate API key
@@ -59,7 +60,7 @@ class HeurekaKosikApiExtension extends CompilerExtension
         if ($apiKey === null) {
             throw new \InvalidArgumentException(
                 'Heureka API key is required. Please set it in your config.neon ' .
-                'or use environment variable via %env.HEUREKA_API_KEY%'
+                'or use environment variable via %env.HEUREKA_API_KEY%',
             );
         }
 

@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Freema\HeurekaAPI\Bundle\DependencyInjection;
 
 use Freema\HeurekaAPI\Api;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
  * Symfony DependencyInjection Extension for Heureka Košík API
@@ -24,7 +22,7 @@ class HeurekaKosikApiExtension extends Extension
     /**
      * Loads the bundle configuration and registers services
      *
-     * @param array<int, mixed> $configs The configuration array
+     * @param array<int, array<string, mixed>> $configs The configuration array
      * @param ContainerBuilder $container The container builder
      *
      * @throws \Exception

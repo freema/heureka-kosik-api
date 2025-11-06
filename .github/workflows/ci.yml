@@ -8,7 +8,7 @@ on:
 
 jobs:
   phpstan:
-    name: PHPStan (PHP 8.3)
+    name: PHPStan (PHP 8.1)
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +17,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.3
+          php-version: 8.1
           extensions: curl, json
           coverage: none
 
@@ -25,9 +25,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: vendor
-          key: ${{ runner.os }}-php-8.3-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-php-8.1-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-php-8.3-
+            ${{ runner.os }}-php-8.1-
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress

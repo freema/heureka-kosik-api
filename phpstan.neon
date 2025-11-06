@@ -6,8 +6,12 @@ parameters:
     paths:
         - src
     excludePaths:
-        - src/Bridges/HeurekaKosikApiExtension.php
         - src/Response.php
     treatPhpDocTypesAsCertain: false
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
+    ignoreErrors:
+        # Symfony Config component dynamic method resolution
+        - message: '#Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface::booleanNode\(\)#'
+          path: src/Bundle/DependencyInjection/Configuration.php
+        # Symfony extension interface contravariance is intentional for type safety
+        - message: '#Parameter \#1 \$configs .* should be contravariant with parameter \$configs#'
+          path: src/Bundle/DependencyInjection/HeurekaKosikApiExtension.php
