@@ -28,12 +28,18 @@ class PutOrderStatus extends GetOrderStatus implements IPutOrderStatus
 
     public function setTracnkingUrl(string $url): self
     {
+        if (!isset($this->param['transport']) || !is_array($this->param['transport'])) {
+            $this->param['transport'] = [];
+        }
         $this->param['transport']['tracnking_url'] = $url;
         return $this;
     }
 
     public function setNote(string $note): self
     {
+        if (!isset($this->param['transport']) || !is_array($this->param['transport'])) {
+            $this->param['transport'] = [];
+        }
         $this->param['transport']['note'] = $note;
         return $this;
     }
@@ -41,6 +47,9 @@ class PutOrderStatus extends GetOrderStatus implements IPutOrderStatus
     public function setExpectDeliver(string $delivary): self
     {
         // BUGFIX: This was incorrectly setting 'note' instead of 'expect_deliver'
+        if (!isset($this->param['transport']) || !is_array($this->param['transport'])) {
+            $this->param['transport'] = [];
+        }
         $this->param['transport']['expect_deliver'] = $delivary;
         return $this;
     }

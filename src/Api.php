@@ -67,7 +67,7 @@ class Api
             return $this;
         }
 
-        if (preg_match('(^[\w]{7}$)', $apiKey)) {
+        if (preg_match('(^[\w]{7}$)', $apiKey) === 1) {
             $this->apiKey = $apiKey;
             $this->debugMode = $debug;
             return $this;
@@ -81,10 +81,6 @@ class Api
      */
     public function setApiVersion(int $version): self
     {
-        if (!is_int($version)) {
-            throw new InvalidArgumentException('setApiVersion function only accepts integers. Input was: ' . $version);
-        }
-
         $this->apiVersion = $version;
         return $this;
     }

@@ -43,7 +43,7 @@ abstract class Container implements IContainer
      */
     protected function get(string $url, array $vars = []): self
     {
-        if (!empty($vars)) {
+        if ($vars !== []) {
             $url .= (stripos($url, '?') !== false) ? '&' : '?';
             $url .= http_build_query($vars, '', '&');
         }
@@ -79,19 +79,21 @@ abstract class Container implements IContainer
      */
     protected function request(string $method, string $url, array $vars = []): self
     {
-        $this->request = curl_init();
+        $curlHandle = curl_init();
 
-        if ($this->request === false) {
+        if ($curlHandle === false) {
             throw new HeurekaApiException('Failed to initialize cURL');
         }
 
+        $this->request = $curlHandle;
         $varsString = http_build_query($vars, '', '&');
 
         $this->setRequestMethod($method, $varsString);
         $this->setRequestOptions($url);
 
         $response = curl_exec($this->request);
-        $this->httpCode = (int) curl_getinfo($this->request, CURLINFO_HTTP_CODE);
+        $httpCodeResult = curl_getinfo($this->request, CURLINFO_HTTP_CODE);
+        $this->httpCode = is_int($httpCodeResult) ? $httpCodeResult : 0;
 
         $this->response = $response;
 
@@ -127,11 +129,13 @@ abstract class Container implements IContainer
 
     protected function fileupload(string $url): self
     {
-        $this->request = curl_init();
+        $curlHandle = curl_init();
 
-        if ($this->request === false) {
+        if ($curlHandle === false) {
             throw new HeurekaApiException('Failed to initialize cURL');
         }
+
+        $this->request = $curlHandle;
 
         curl_setopt($this->request, CURLOPT_URL, $url);
         curl_setopt($this->request, CURLOPT_HTTPHEADER, ['Content-type: multipart/form-data']);
@@ -150,7 +154,9 @@ abstract class Container implements IContainer
      */
     protected function getResponse(): ?array
     {
-        $this->decoded = json_decode((string) $this->response, true);
+        $responseString = is_string($this->response) ? $this->response : '';
+        $decoded = json_decode($responseString, true);
+        $this->decoded = is_array($decoded) ? $decoded : null;
         $this->checkError();
 
         return $this->decoded;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Freema\HeurekaAPI;
 
+use AllowDynamicProperties;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
@@ -17,6 +18,7 @@ use Traversable;
  * @implements ArrayAccess<string, mixed>
  * @implements IteratorAggregate<string, mixed>
  */
+#[AllowDynamicProperties]
 class Response implements ArrayAccess, IteratorAggregate, Countable
 {
     /**
@@ -24,9 +26,9 @@ class Response implements ArrayAccess, IteratorAggregate, Countable
      */
     public function __construct(?array $arr)
     {
-        if (isset($arr)) {
+        if ($arr !== null) {
             foreach ($arr as $k => $v) {
-                $name = str_replace('-', '_', (string) $k);
+                $name = str_replace('-', '_', $k);
                 $this->$name = $v;
             }
         }
@@ -52,16 +54,16 @@ class Response implements ArrayAccess, IteratorAggregate, Countable
      */
     public function getIterator(): Traversable
     {
-        return new ArrayIterator($this);
+        return new ArrayIterator((array) $this);
     }
 
     /**
-     * @param string $offset
+     * @param string|null $offset
      * @param mixed $value
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        if ($offset !== null) {
+        if ($offset !== null && is_string($offset)) {
             $this->$offset = $value;
         }
     }
