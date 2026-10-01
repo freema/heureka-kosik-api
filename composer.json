@@ -1,6 +1,7 @@
 {
 	"name": "freema/heureka-kosik-api",
 	"description": "Modern PHP client for Heureka Košík API",
+	"abandoned": true,
 	"keywords": ["api", "heureka.cz", "kosik", "e-commerce"],
 	"homepage": "https://github.com/freema/heureka-kosik-api",
 	"license": ["BSD-3-Clause", "GPL-2.0-or-later", "GPL-3.0-or-later"],

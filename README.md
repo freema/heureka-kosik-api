@@ -1,5 +1,8 @@
 # Heureka Košík API Client
 
+> [!WARNING]
+> **Archived, no longer maintained.** No new versions will be released. Known issue: `PostOrderInvoice` does not upload the PDF. The form is sent URL-encoded, so Heureka receives the literal string `@<path>;type=application/pdf` instead of the file.
+
 Modern PHP 8.1+ client for Heureka Košík API with full type safety and strict standards.
 
 [![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue)](https://php.net)
